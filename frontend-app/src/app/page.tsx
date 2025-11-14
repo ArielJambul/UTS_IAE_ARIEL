@@ -5,6 +5,7 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 import { userApi } from '@/lib/api';
 
 // GraphQL queries and mutations
+// <<< PERUBAHAN 1: Menambahkan 'status' di GET_POSTS >>>
 const GET_POSTS = gql`
   query GetPosts {
     posts {
@@ -13,18 +14,21 @@ const GET_POSTS = gql`
       content
       author
       createdAt
+      status
     }
   }
 `;
 
+// <<< PERUBAHAN 2: Menambahkan '$status' di CREATE_POST >>>
 const CREATE_POST = gql`
-  mutation CreatePost($title: String!, $content: String!, $author: String!) {
-    createPost(title: $title, content: $content, author: $author) {
+  mutation CreatePost($title: String!, $content: String!, $author: String!, $status: PostStatus!) {
+    createPost(title: $title, content: $content, author: $author, status: $status) {
       id
       title
       content
       author
       createdAt
+      status
     }
   }
 `;
@@ -33,7 +37,9 @@ export default function Home() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newUser, setNewUser] = useState({ name: '', email: '', age: '' });
-  const [newPost, setNewPost] = useState({ title: '', content: '', author: '' });
+  
+  // <<< PERUBAHAN 3: Menambahkan 'status' ke state newPost >>>
+  const [newPost, setNewPost] = useState({ title: '', content: '', author: '', status: 'TODO' });
 
   // GraphQL queries
   const { data: postsData, loading: postsLoading, refetch: refetchPosts } = useQuery(GET_POSTS);
@@ -76,7 +82,8 @@ export default function Home() {
       await createPost({
         variables: newPost,
       });
-      setNewPost({ title: '', content: '', author: '' });
+      // <<< PERUBAHAN 4: Me-reset 'status' setelah submit >>>
+      setNewPost({ title: '', content: '', author: '', status: 'TODO' });
       refetchPosts();
     } catch (error) {
       console.error('Error creating post:', error);
@@ -92,6 +99,19 @@ export default function Home() {
     }
   };
 
+  // <<< PERUBAHAN 5: Fungsi helper untuk badge status >>>
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'DONE':
+        return <span className="ml-2 bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Done</span>;
+      case 'PROGRESS':
+        return <span className="ml-2 bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">In Progress</span>;
+      case 'TODO':
+      default:
+        return <span className="ml-2 bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">To-Do</span>;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -102,7 +122,7 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Users Section (REST API) */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Users</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Users</h2>
             
             {/* Create User Form */}
             <form onSubmit={handleCreateUser} className="mb-6">
@@ -144,7 +164,7 @@ export default function Home() {
 
             {/* Users List */}
             {loading ? (
-              <p>Loading users...</p>
+              <p>Loading...</p>
             ) : (
               <div className="space-y-4">
                 {users.map((user: any) => (
@@ -168,7 +188,7 @@ export default function Home() {
 
           {/* Posts Section (GraphQL) */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Posts</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Posts</h2>
             
             {/* Create Post Form */}
             <form onSubmit={handleCreatePost} className="mb-6">
@@ -196,6 +216,20 @@ export default function Home() {
                   className="border rounded-md px-3 py-2"
                   required
                 />
+
+                {/* <<< PERUBAHAN 6: Menambahkan dropdown/select untuk status >>> */}
+                <select
+                  value={newPost.status}
+                  onChange={(e) => setNewPost({ ...newPost, status: e.target.value })}
+                  className="border rounded-md px-3 py-2"
+                  required
+                >
+                  <option value="TODO">To-Do</option>
+                  <option value="PROGRESS">In Progress</option>
+                  <option value="DONE">Done</option>
+                </select>
+                {/* --- Batas blok tambahan --- */}
+
                 <button
                   type="submit"
                   className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
@@ -207,12 +241,16 @@ export default function Home() {
 
             {/* Posts List */}
             {postsLoading ? (
-              <p>Loading posts...</p>
+              <p>Loading...</p>
             ) : (
               <div className="space-y-4">
                 {postsData?.posts.map((post: any) => (
                   <div key={post.id} className="p-4 border rounded">
-                    <h3 className="font-semibold text-lg">{post.title}</h3>
+                    {/* <<< PERUBAHAN 7: Menampilkan badge status di list >>> */}
+                    <div className="flex items-center">
+                      <h3 className="font-semibold text-lg">{post.title}</h3>
+                      {getStatusBadge(post.status)}
+                    </div>
                     <p className="text-gray-600 mt-2">{post.content}</p>
                     <div className="flex justify-between items-center mt-3 text-sm text-gray-500">
                       <span>By: {post.author}</span>

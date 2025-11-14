@@ -31,12 +31,22 @@ app.use(cors({
 }));
 
 
-// In-memory data store (Kode Anda, tidak berubah)
+// In-memory data store
+// <<< PERUBAHAN 1: Data 'posts' dan 'comments' dikosongkan >>>
 let posts = [];
 let comments = [];
 
-// GraphQL type definitions (VERSI BERSIH TANPA KARAKTER SILUMAN)
+
+// <<< PERUBAHAN 2: typeDefs diperbarui dengan Enum, status di Post, dan status di createPost >>>
+// GraphQL type definitions
 const typeDefs = `
+
+enum PostStatus {
+  TODO
+  PROGRESS
+  DONE
+}
+
 type Post {
   id: ID!
   title: String!
@@ -44,6 +54,7 @@ type Post {
   author: String!
   createdAt: String!
   comments: [Comment!]!
+  status: PostStatus!
 }
 
 
@@ -64,7 +75,7 @@ type Query {
 
 
 type Mutation {
-  createPost(title: String!, content: String!, author: String!): Post!
+  createPost(title: String!, content: String!, author: String!, status: PostStatus!): Post!
   updatePost(id: ID!, title: String, content: String): Post!
   deletePost(id: ID!): Boolean!
   createComment(postId: ID!, content: String!, author: String!): Comment!
@@ -81,7 +92,7 @@ type Subscription {
 `;
 
 
-// GraphQL resolvers (Kode Anda, tidak berubah)
+// GraphQL resolvers
 const resolvers = {
   Query: {
     posts: () => posts,
@@ -96,12 +107,14 @@ const resolvers = {
 
 
   Mutation: {
-    createPost: (_, { title, content, author }) => {
+    // <<< PERUBAHAN 3: Resolver createPost diperbarui untuk menerima dan menyimpan 'status' >>>
+    createPost: (_, { title, content, author, status }) => {
       const newPost = {
         id: uuidv4(),
         title,
         content,
         author,
+        status, // status ditambahkan
         createdAt: new Date().toISOString(),
       };
       posts.push(newPost);
