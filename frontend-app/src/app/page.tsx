@@ -96,13 +96,13 @@ export default function Home() {
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold text-center text-gray-900 mb-12">
-          Microservices Demo App
+          My Task Management
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Users Section (REST API) */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Users (REST API)</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Users</h2>
             
             {/* Create User Form */}
             <form onSubmit={handleCreateUser} className="mb-6">
@@ -168,7 +168,7 @@ export default function Home() {
 
           {/* Posts Section (GraphQL) */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Posts (GraphQL)</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Posts</h2>
             
             {/* Create Post Form */}
             <form onSubmit={handleCreatePost} className="mb-6">

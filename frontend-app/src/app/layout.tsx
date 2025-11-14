@@ -6,8 +6,8 @@ import { ApolloWrapper } from '@/lib/apollo-client'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Microservices Demo App',
-  description: 'Demo app consuming REST and GraphQL APIs',
+  title: 'Task Management',
+  description: 'Task Management REST And GraphQL API',
 }
 
 export default function RootLayout({
