@@ -5,26 +5,7 @@ const { validateUser, validateUserUpdate } = require('../middleware/validation')
 const router = express.Router();
 
 // In-memory database (replace with real database in production)
-let users = [
-  {
-    id: '1',
-    name: 'John Doe',
-    email: 'john@example.com',
-    age: 30,
-    role: 'admin',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    age: 25,
-    role: 'user',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-];
+let users = [];
 
 // GET /api/users - Get all users
 router.get('/', (req, res) => {
