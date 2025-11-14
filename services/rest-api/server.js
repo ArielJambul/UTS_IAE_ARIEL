@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const userRoutes = require('./routes/users');
+const authRoutes = require('./routes/auth'); // Tambahkan ini
 const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -34,6 +35,7 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes); // Tambahkan ini
 
 // Error handling middleware
 app.use(errorHandler);

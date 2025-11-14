@@ -9,7 +9,7 @@ export const apiClient = axios.create({
   },
 });
 
-// User API calls
+// API untuk data User (yang sudah ada)
 export const userApi = {
   getUsers: () => apiClient.get('/api/users'),
   getUser: (id: string) => apiClient.get(`/api/users/${id}`),
@@ -18,4 +18,10 @@ export const userApi = {
   updateUser: (id: string, userData: { name?: string; email?: string; age?: number }) => 
     apiClient.put(`/api/users/${id}`, userData),
   deleteUser: (id: string) => apiClient.delete(`/api/users/${id}`),
+};
+
+// API baru untuk Autentikasi
+export const authApi = {
+  register: (userData: any) => apiClient.post('/api/auth/register', userData),
+  login: (credentials: any) => apiClient.post('/api/auth/login', credentials),
 };

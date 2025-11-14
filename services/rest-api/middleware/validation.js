@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-// User validation schema
+// User validation schema (from page.tsx)
 const userSchema = Joi.object({
   name: Joi.string().min(2).max(50).required(),
   email: Joi.string().email().required(),
@@ -16,10 +16,23 @@ const userUpdateSchema = Joi.object({
   role: Joi.string().valid('admin', 'user', 'moderator').optional()
 }).min(1); // At least one field must be provided
 
-// Validation middleware for creating users
+// Skema baru untuk registrasi
+const registerSchema = Joi.object({
+  username: Joi.string().min(3).max(30).required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().min(6).required()
+});
+
+// Skema baru untuk login
+const loginSchema = Joi.object({
+  username: Joi.string().required(),
+  password: Joi.string().required()
+});
+
+// Validation middleware for creating users (from page.tsx)
 const validateUser = (req, res, next) => {
   const { error } = userSchema.validate(req.body);
-  
+
   if (error) {
     return res.status(400).json({
       error: 'Validation error',
@@ -27,14 +40,14 @@ const validateUser = (req, res, next) => {
       details: error.details
     });
   }
-  
+
   next();
 };
 
-// Validation middleware for updating users
+// Validation middleware for updating users (from page.tsx)
 const validateUserUpdate = (req, res, next) => {
   const { error } = userUpdateSchema.validate(req.body);
-  
+
   if (error) {
     return res.status(400).json({
       error: 'Validation error',
@@ -42,11 +55,31 @@ const validateUserUpdate = (req, res, next) => {
       details: error.details
     });
   }
-  
+
+  next();
+};
+
+// Middleware baru
+const validateRegister = (req, res, next) => {
+  const { error } = registerSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: 'Validation error', message: error.details[0].message });
+  }
+  next();
+};
+
+// Middleware baru
+const validateLogin = (req, res, next) => {
+  const { error } = loginSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: 'Validation error', message: error.details[0].message });
+  }
   next();
 };
 
 module.exports = {
   validateUser,
-  validateUserUpdate
+  validateUserUpdate,
+  validateRegister, // Ekspor baru
+  validateLogin     // Ekspor baru
 };

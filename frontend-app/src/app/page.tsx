@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation'; // Import useRouter
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { userApi } from '@/lib/api';
 
-// GraphQL queries and mutations
+// ... (Definisi GraphQL GET_POSTS, CREATE_POST, DELETE_POST tetap sama)
 const GET_POSTS = gql`
   query GetPosts {
     posts {
@@ -31,7 +32,6 @@ const CREATE_POST = gql`
   }
 `;
 
-// Menambahkan mutasi DELETE_POST
 const DELETE_POST = gql`
   mutation DeletePost($id: ID!) {
     deletePost(id: $id)
@@ -42,25 +42,35 @@ export default function Home() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newUser, setNewUser] = useState({ name: '', email: '', age: '' });
-  
-  // Mengubah state awal 'status' menjadi string kosong untuk placeholder
   const [newPost, setNewPost] = useState({ title: '', content: '', author: '', status: '' });
+
+  // State untuk proteksi halaman
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
 
   // GraphQL queries
   const { data: postsData, loading: postsLoading, refetch: refetchPosts } = useQuery(GET_POSTS);
   const [createPost] = useMutation(CREATE_POST);
-  
-  // Menambahkan hook useMutation untuk deletePost
   const [deletePost] = useMutation(DELETE_POST);
 
-  // Fetch users from REST API
+  // ===== PROTEKSI HALAMAN DITAMBAHKAN =====
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+    } else {
+      setIsAuthenticated(true);
+      fetchUsers();
+    }
+  }, [router]);
+  // ==========================================
 
   const fetchUsers = async () => {
     try {
-      const response = await userApi.getUsers();
+      // Kita perlu menambahkan token ke header untuk request ini
+      // (Idealnya, apiClient di-setup untuk menambahkannya otomatis)
+      const token = localStorage.getItem('token');
+      const response = await userApi.getUsers(/* { headers: { Authorization: `Bearer ${token}` } } */);
       setUsers(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -69,6 +79,7 @@ export default function Home() {
     }
   };
 
+  // ... (sisa handler: handleCreateUser, handleCreatePost, handleDeleteUser, handleDeletePost, getStatusBadge tetap sama)
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -90,7 +101,6 @@ export default function Home() {
       await createPost({
         variables: newPost,
       });
-      // Me-reset 'status' kembali ke string kosong
       setNewPost({ title: '', content: '', author: '', status: '' });
       refetchPosts();
     } catch (error) {
@@ -107,19 +117,17 @@ export default function Home() {
     }
   };
 
-  // Fungsi handler untuk delete post
   const handleDeletePost = async (id: string) => {
     try {
       await deletePost({
         variables: { id: id },
       });
-      refetchPosts(); // Otomatis refresh daftar post
+      refetchPosts(); 
     } catch (error) {
       console.error('Error deleting post:', error);
     }
   };
 
-  // Fungsi helper untuk badge status
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'DONE':
@@ -132,6 +140,16 @@ export default function Home() {
     }
   };
 
+  // Tampilkan loading jika belum terautentikasi
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  // ===== JSX KONTEN HALAMAN (TETAP SAMA) =====
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -140,18 +158,13 @@ export default function Home() {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* // ===========================================
-          // ===== BLOK USERS DIPERBARUI (SARAN 3) =====
-          // ===========================================
-          */}
+
+          {/* Blok Users */}
           <div className="bg-white shadow rounded-lg overflow-hidden">
             <div className="bg-gray-50 p-6 border-b border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 text-center">Users</h2>
             </div>
-            
             <div className="p-6">
-              {/* Create User Form */}
               <form onSubmit={handleCreateUser} className="mb-6">
                 <div className="grid grid-cols-1 gap-4">
                   <input
@@ -188,8 +201,6 @@ export default function Home() {
                   </button>
                 </div>
               </form>
-
-              {/* Users List */}
               {loading ? (
                 <p>Loading...</p>
               ) : (
@@ -213,20 +224,13 @@ export default function Home() {
               )}
             </div>
           </div>
-          {/* ===== AKHIR BLOK USERS ===== */}
 
-
-          {/* // ===========================================
-          // ===== BLOK POSTS DIPERBARUI (SARAN 3) =====
-          // ===========================================
-          */}
+          {/* Blok Posts */}
           <div className="bg-white shadow rounded-lg overflow-hidden">
             <div className="bg-gray-50 p-6 border-b border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 text-center">Posts</h2>
             </div>
-            
             <div className="p-6">
-              {/* Create Post Form */}
               <form onSubmit={handleCreatePost} className="mb-6">
                 <div className="grid grid-cols-1 gap-4">
                   <input
@@ -252,8 +256,6 @@ export default function Home() {
                     className="border rounded-md px-3 py-2"
                     required
                   />
-
-                  {/* Dropdown 'status' dengan placeholder dan styling */}
                   <select
                     value={newPost.status}
                     onChange={(e) => setNewPost({ ...newPost, status: e.target.value })}
@@ -267,7 +269,6 @@ export default function Home() {
                     <option value="PROGRESS">In Progress</option>
                     <option value="DONE">Done</option>
                   </select>
-
                   <button
                     type="submit"
                     className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
@@ -276,15 +277,12 @@ export default function Home() {
                   </button>
                 </div>
               </form>
-
-              {/* Posts List */}
               {postsLoading ? (
                 <p>Loading...</p>
               ) : (
                 <div className="space-y-4">
                   {postsData?.posts.map((post: any) => (
                     <div key={post.id} className="flex justify-between items-start p-4 border rounded">
-                      {/* Bagian Kiri: Info Post */}
                       <div>
                         <div className="flex items-center">
                           <h3 className="font-semibold text-lg">{post.title}</h3>
@@ -295,7 +293,6 @@ export default function Home() {
                           <span>By: {post.author}</span>
                         </div>
                       </div>
-                      {/* Bagian Kanan: Tombol Delete DAN Tanggal */}
                       <div className="flex flex-col items-end space-y-2">
                         <button
                           onClick={() => handleDeletePost(post.id)}
@@ -313,8 +310,6 @@ export default function Home() {
               )}
             </div>
           </div>
-          {/* ===== AKHIR BLOK POSTS ===== */}
-
         </div>
       </div>
     </div>
