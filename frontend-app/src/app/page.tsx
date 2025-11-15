@@ -145,7 +145,6 @@ export default function Home() {
     localStorage.removeItem('token');
     router.push('/login');
   };
-  // ===================================
 
   // Tampilkan loading jika belum terautentikasi
   if (!isAuthenticated) {
