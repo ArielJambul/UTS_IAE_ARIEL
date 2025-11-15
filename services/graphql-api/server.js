@@ -19,7 +19,7 @@ const app = express();
 const pubsub = new PubSub();
 
 
-// Enable CORS (Kode Anda, tidak berubah)
+// Enable CORS (Kode tidak berubah)
 app.use(cors({
   origin: [
     'http://localhost:3000', // API Gateway
