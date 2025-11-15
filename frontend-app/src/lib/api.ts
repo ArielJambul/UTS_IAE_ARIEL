@@ -28,5 +28,5 @@ export const authApi = {
   
   // Ubah endpoint login dan tipe datanya
   login: (credentials: { name: string, password: string }) => 
-    apiClient.post('/api/users/login', credentials), // UBAH ENDPOINT
+    apiClient.post('/api/users/login', credentials),
 };

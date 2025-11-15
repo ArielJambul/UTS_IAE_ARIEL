@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { userApi } from '@/lib/api'; // Ganti ke userApi
+import { userApi } from '@/lib/api';
 
 export default function Register() {
   // Ubah 'username' menjadi 'name'
@@ -35,9 +35,9 @@ export default function Register() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
-            placeholder="Name (This will be your login name)" // Ubah placeholder
-            value={name} // Ubah
-            onChange={(e) => setName(e.target.value)} // Ubah
+            placeholder="Name (This will be your login name)"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="w-full border rounded-md px-3 py-2"
             required
           />

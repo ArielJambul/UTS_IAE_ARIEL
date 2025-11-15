@@ -13,11 +13,11 @@ app.use(helmet());
 app.use(cors());
 
 // Rate limiting
-const limiter = rateLimit({ // <--- INI BAGIAN YANG HILANG
-  windowMs: 15 * 60 * 1000, // 15 minutes
+const limiter = rateLimit({ 
+  windowMs: 15 * 60 * 1000, 
   max: 100 // limit each IP to 100 requests per windowMs
 });
-app.use(limiter); // <--- Baris 15 Anda yang error
+app.use(limiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -34,7 +34,6 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/users', userRoutes);
-// Pastikan rute '/api/auth' sudah tidak ada
 
 // Error handling middleware
 app.use(errorHandler);

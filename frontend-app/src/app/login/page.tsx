@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { authApi } from '@/lib/api';
 
 export default function Login() {
-  const [name, setName] = useState(''); // UBAH DARI 'username'
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
@@ -20,7 +20,7 @@ export default function Login() {
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         
-        // Simpan info pengguna untuk ditampilkan (opsional tapi bagus)
+        // Simpan info pengguna untuk ditampilkan
         localStorage.setItem('user', JSON.stringify(response.data.user)); 
         
         router.push('/'); // Redirect ke halaman utama
@@ -40,9 +40,9 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
-            placeholder="Name" // UBAH DARI 'Username'
-            value={name} // UBAH DARI 'username'
-            onChange={(e) => setName(e.target.value)} // UBAH DARI 'setUsername'
+            placeholder="Name"
+            value={name} 
+            onChange={(e) => setName(e.target.value)}
             className="w-full border rounded-md px-3 py-2"
             required
           />

@@ -4,8 +4,8 @@ const Joi = require('joi');
 const userSchema = Joi.object({
   name: Joi.string().min(2).max(50).required(),
   email: Joi.string().email().required(),
-  password: Joi.string().min(6).required(), // TAMBAHKAN INI
-  // age: Joi.number().integer().min(1).max(150).required(), // HAPUS INI
+  password: Joi.string().min(6).required(),
+  // age: Joi.number().integer().min(1).max(150).required()
   role: Joi.string().valid('admin', 'user', 'moderator').optional()
 });
 
@@ -13,13 +13,13 @@ const userSchema = Joi.object({
 const userUpdateSchema = Joi.object({
   name: Joi.string().min(2).max(50).optional(),
   email: Joi.string().email().optional(),
-  // age: Joi.number().integer().min(1).max(150).optional(), // HAPUS INI
+  // age: Joi.number().integer().min(1).max(150).optional()
   role: Joi.string().valid('admin', 'user', 'moderator').optional()
 }).min(1); // At least one field must be provided
 
 // Skema Login BARU: Ubah 'username' menjadi 'name'
 const loginSchema = Joi.object({
-  name: Joi.string().required(), // UBAH DARI 'username'
+  name: Joi.string().required(),
   password: Joi.string().required()
 });
 
@@ -65,6 +65,5 @@ const validateLogin = (req, res, next) => {
 module.exports = {
   validateUser,
   validateUserUpdate,
-  // Hapus validateRegister
-  validateLogin     // Ekspor validateLogin
+  validateLogin
 };

@@ -41,7 +41,7 @@ router.get('/', (req, res) => {
     );
   }
   
-  // ... (Logika paginasi tetap sama) ...
+  // (Logika paginasi tetap sama)
   if (page && limit) {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
@@ -153,7 +153,6 @@ router.post('/login', validateLogin, async (req, res) => {
       }
     };
 
-    // ===== INI BAGIAN YANG DIPERBAIKI =====
     // Argumen yang benar adalah (payload, secret, options, callback)
     jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
       if (err) throw err;
@@ -167,7 +166,6 @@ router.post('/login', validateLogin, async (req, res) => {
         }
       });
     });
-    // ====================================
 
   } catch (err) {
     console.error(err);
